@@ -13,7 +13,7 @@ function plotSSSErrorFig(errs, hypnms, dts, mnkNms, ...
         doAbbrev = false;
     end
     if nargin < 8
-        saveDir = 'data/plots';
+        saveDir = fullfile('data', 'plots');
     end
     if nargin < 9
         fnm = 'SSS_avg';
