@@ -3,7 +3,9 @@ _Jay A. Hennig, Matthew D. Golub, Peter J. Lund, Patrick T. Sadtler, Emily R. Ob
 
 ## Getting started
 
-To fit the included sessions and generate figures, run the following:
+Add all experimental sessions (link to data coming soon) to the folder `data/sessions/`.
+
+Now, to fit all sessions and generate figures, run the following:
 
 ```
 >> fitAndPlotAll
