@@ -3,5 +3,6 @@
 data/sessions/*
 data/fits/*
 data/plots/*
+data/releases
 !/**/.gitkeep
 _*.m

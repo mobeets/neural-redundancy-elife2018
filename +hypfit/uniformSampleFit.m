@@ -1,4 +1,10 @@
 function [Z, E] = uniformSampleFit(Tr, Te, dec, opts)
+% aka "Uncontrolled-uniform" (Figure 3A)
+% 
+% for each timestep in the test data (Te), sample uniformly from
+% output-null activity, with bounds defined by the min/max null activity
+% observed in the Training data (Tr) in each dimension
+% 
     if nargin < 4
         opts = struct();
     end
@@ -9,12 +15,14 @@ function [Z, E] = uniformSampleFit(Tr, Te, dec, opts)
     RB = Te.RB;
     NB = Te.NB;
     Z1 = Tr.latents;
-    Zr = Te.latents*(RB*RB');
+    Zr = Te.latents*(RB*RB'); % = actual potent activity
     
     nt = size(Zr,1);
-    Zn = getSamples(Z1*NB, nt);
-    Z = Zr + Zn*NB';
+    Zn = getSamples(Z1*NB, nt); % = predicted output-null activity
+    Z = Zr + Zn*NB'; % = true potent + predicted null
     
+    % check to ensure that all predictions are consistent with min/max
+    % firing rates on every channel; if not, resample
     if opts.obeyBounds
         % resample invalid points
         isOutOfBounds = tools.boundsFcn(Tr.spikes, 'spikes', dec, false);
@@ -29,7 +37,7 @@ function [Z, E] = uniformSampleFit(Tr, Te, dec, opts)
         end
         if n0 - sum(ixOob) > 0
             disp(['Corrected ' num2str(n0 - sum(ixOob)) ...
-                ' uniform sample sample(s) to lie within bounds']);
+                ' uncontrolled-uniform sample sample(s) to lie within bounds']);
         end
         if opts.nanIfOutOfBounds
             Z(ixOob,:) = nan;
@@ -40,7 +48,6 @@ function [Z, E] = uniformSampleFit(Tr, Te, dec, opts)
 end
 
 function Zsamp = getSamples(Z, n)
-%
 % generate n random samples of dim size(Z,2)
 %   with the samples obeying the empirical
 %   upper/lower bounds observed in Z

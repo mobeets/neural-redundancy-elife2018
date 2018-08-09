@@ -10,6 +10,9 @@ saveDir = fullfile('data', 'plots', runName, figureName);
 if doSave && ~exist(saveDir, 'dir')
     mkdir(saveDir);
 end
+if numel(dts) == 1
+    warning('Must fit more than one session. Skipping'); return;
+end
 
 %% plot average change in variance predicted by each hypothesis
 

@@ -1,5 +1,5 @@
 function Ps = plotError(errs, nms, opts)
-    if nargin < 2
+    if nargin < 3
         opts = struct();
     end
     defopts = struct('width', 6, 'height', 6, 'margin', 0.125, ...
@@ -11,8 +11,10 @@ function Ps = plotError(errs, nms, opts)
         'LineWidth', 2, 'ymin', 0, 'ymax', nan, 'TextNote', '');
     opts = tools.setDefaultOptsWhenNecessary(opts, defopts);
 
-    if numel(errs) == numel(nms)
-        error('Must provide multiple errors per hyp.');
+    Ps = [];
+    if (numel(errs) == numel(nms)) || numel(errs) == 0
+        warning('Must provide multiple errors per hypothesis. Skipping');
+        return;
     end
     
     % show plot

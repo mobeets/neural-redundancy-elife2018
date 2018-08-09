@@ -1,5 +1,10 @@
 function [Z, E] = randNulValFit(Tr, Te, dec, opts)
-% choose intuitive pt within thetaTol
+% aka "Uncontrolled-empirical" (Figure 3D)
+% 
+% for each timestep in the test data (Te), sample from timesteps in
+% the training data (Tr) and use the output-null activity of the sample
+% as the prediction.
+% 
     if nargin < 4
         opts = struct();
     end
@@ -12,10 +17,12 @@ function [Z, E] = randNulValFit(Tr, Te, dec, opts)
     Z1 = Tr.latents;
     Z2 = Te.latents;    
     
-    Zsamp = Z1(randi(size(Z1,1),size(Z2,1),1),:);
-    Zr = Z2*(RB2*RB2');
-    Z = Zr + Zsamp*(NB2*NB2');
+    Zsamp = Z1(randi(size(Z1,1),size(Z2,1),1),:); % random samples
+    Zr = Z2*(RB2*RB2'); % = actual potent activity
+    Z = Zr + Zsamp*(NB2*NB2'); % = true potent + predicted null
     
+    % check to ensure that all predictions are consistent with min/max
+    % firing rates on every channel; if not, resample
     if opts.obeyBounds
         % resample invalid points
         isOutOfBounds = tools.boundsFcn(Tr.spikes, 'spikes', dec, false);
@@ -30,7 +37,7 @@ function [Z, E] = randNulValFit(Tr, Te, dec, opts)
         end
         if n0 - sum(ixOob) > 0
             disp(['Corrected ' num2str(n0 - sum(ixOob)) ...
-                ' unconstrained sample(s) to lie within bounds']);
+                ' uncontrolled-uniform sample(s) to lie within bounds']);
         end
         if opts.nanIfOutOfBounds
             Z(ixOob,:) = nan;

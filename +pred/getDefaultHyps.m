@@ -1,6 +1,10 @@
 function hyps = getDefaultHyps(hnms, grpName)
 % get all hypotheses by name (hnms: cell), and set the default parameters
 % of each hypothesis as used in the manuscript
+% 
+% grpName (str) is used by minimal-deviation to do cross-validation over
+%   the best mean to predict across cursor-target angle groups
+% 
     if nargin < 1
         hnms = {};
     end
@@ -9,8 +13,7 @@ function hyps = getDefaultHyps(hnms, grpName)
     end
     hyps = [];
     
-    % params (most are for min-energy hyps only)
-    fitInLatent = false; % fit in latent factor space or neural spike space
+    % params (most are only used by the minimal-energy hypotheses)
     addNoise = true; % when going from factor activity to spikes
     obeyBounds = true; % min/max firing rate constraints per channel
     nanIfOutOfBounds = true;
@@ -19,11 +22,9 @@ function hyps = getDefaultHyps(hnms, grpName)
     % Minimal Firing (L2 norm)
     clear hyp;
     hyp.name = 'minimal-firing';
-    hyp.opts = struct('minType', 'minimum', ...
-        'nanIfOutOfBounds', nanIfOutOfBounds, 'pNorm', 2, ...
-        'fitInLatent', fitInLatent, 'sigmaScale', 1.0, ...
-        'obeyBounds', obeyBounds, 'addSpikeNoise', addNoise, ...
-        'nReps', nReps);
+    hyp.opts = struct('nanIfOutOfBounds', nanIfOutOfBounds, 'pNorm', 2, ...
+        'sigmaScale', 1.0, 'obeyBounds', obeyBounds, ...
+        'addSpikeNoise', addNoise, 'nReps', nReps);
     hyp.fitFcn = @hypfit.minEnergyFit;
     hyps = [hyps hyp];
 

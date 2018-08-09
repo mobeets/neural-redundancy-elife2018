@@ -1,5 +1,10 @@
 function [Z, inds] = randNulValInGrpFit(Tr, Te, dec, opts)
-% choose intuitive pt within thetaTol
+% aka "Persistent Strategy" (Figure 4A)
+% 
+% for each timestep in the test data (Te), sample from timesteps in
+% the training data (Tr) with similar cursor-target angle (within thetaTol)
+% and uses the output-null activity of the sample as the prediction.
+% 
     if nargin < 4
         opts = struct();
     end
@@ -14,13 +19,17 @@ function [Z, inds] = randNulValInGrpFit(Tr, Te, dec, opts)
     ths1 = Tr.thetas;
     ths2 = Te.thetas;
     
+    % find timesteps in Train with similar cursor-target angles to Test
+    % and then for each timestep, sample randomly among those timesteps
     dsThs = pdist2(ths2, ths1, @tools.angleDistance);
     ix = dsThs <= opts.thetaTol;
     [Zsamp, nErrs, inds] = getSamples(Z1, ix);
     
-    Zr = Z2*(RB2*RB2');
-    Z = Zr + Zsamp*(NB2*NB2');
+    Zr = Z2*(RB2*RB2'); % = actual potent activity
+    Z = Zr + Zsamp*(NB2*NB2'); % = true potent + predicted null
     
+    % check to ensure that all predictions are consistent with min/max
+    % firing rates on every channel; if not, resample
     if opts.obeyBounds
         % resample invalid points
         isOutOfBounds = tools.boundsFcn(Tr.spikes, 'spikes', dec, false);
@@ -36,10 +45,10 @@ function [Z, inds] = randNulValInGrpFit(Tr, Te, dec, opts)
         end
         if n0 - sum(ixOob) > 0
             disp(['Corrected ' num2str(n0 - sum(ixOob)) ...
-                ' habitual sample(s) to lie within bounds']);
+                ' persistent-strategy sample(s) to lie within bounds']);
         end
         if sum(ixOob) > 0
-            disp([num2str(sum(ixOob)) ' habitual sample(s) ' ...
+            disp([num2str(sum(ixOob)) ' persistent-strategy sample(s) ' ...
                 'still out-of-bounds']);
         end
         if opts.nanIfOutOfBounds
@@ -48,7 +57,7 @@ function [Z, inds] = randNulValInGrpFit(Tr, Te, dec, opts)
     end
     if nErrs > 0
         disp([num2str(nErrs) ...
-            ' habitual sample(s) had no neighbors within range.']);
+            ' persistent-strategy sample(s) had no neighbors within range.']);
     end
 end
 

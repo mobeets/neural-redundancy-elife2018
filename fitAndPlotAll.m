@@ -3,7 +3,7 @@
 runName = 'example';
 hnms = {'minimal-deviation', 'uncontrolled-uniform', ...
     'uncontrolled-empirical', 'persistent-strategy', 'fixed-distribution'};
-% can add 'minimal-firing' above, but takes a long time so skipping here
+% hnms = [hnms {'minimal-firing'}]; % skip by default because it's slow
 
 savePlots = true;
 doOverwrite = false;

@@ -1,5 +1,5 @@
-function [Zs, isRelaxed] = findAllMinNormFiring(Blk, mu, lb, ub, ...
-    dec, nd, fitInLatent, pNorm, makeFAOrthogonal)
+function [Zs, isRelaxed] = findAllMinNormFiring(Blk, mu, lb, ub, dec, ...
+    nd, fitInLatent, pNorm)
 % 
 % Each u(t) in U is solution (using quadprog) to:
 %   min_u || u - mu ||_pNorm
@@ -19,26 +19,30 @@ function [Zs, isRelaxed] = findAllMinNormFiring(Blk, mu, lb, ub, ...
         lb = [];
         ub = [];
     end
-    if nargin < 7
+    if nargin < 6
         nd = nan;
     end
-    if nargin < 9
+    if nargin < 7
+        fitInLatent = false; % fit in neural (spike) space by default
+    end
+    if nargin < 8
         pNorm = 2; % default: L2 norm
     end
     
-    [mu, Aeq, beqs] = makeConstraints(mu, Blk, fitInLatent, dec, nd, ...
-        makeFAOrthogonal);
+    % make constraints (see above formulation)
+    [mu, Aeq, beqs] = makeConstraints(mu, Blk, fitInLatent, dec, nd);
     
     if pNorm == 1            
         Zs = minL1Norm(mu, Aeq, beqs, lb, ub);
         isRelaxed = false(size(Zs,1),1);
-    else
+    elseif pNorm == 2
         [Zs, isRelaxed] = minL2Norm(mu, Aeq, beqs, lb, ub);
+    else
+        error('Invalid pNorm (must be either 1 or 2)');
     end
 end
 
-function [mu, Aeq, beqs] = makeConstraints(mu, Blk, fitInLatent, dec, ...
-    nd, makeFAOrthogonal)
+function [mu, Aeq, beqs] = makeConstraints(mu, Blk, fitInLatent, dec, nd)
 
 %     x0 = Blk.vel(t,:)';
 %     x1 = Blk.velNext(t,:)';
@@ -59,11 +63,10 @@ function [mu, Aeq, beqs] = makeConstraints(mu, Blk, fitInLatent, dec, ...
         mu = zeros(nd, 1);
     end
     if ~fitInLatent
-        % update Aeq,beq so that our spike solutions, after 
+        % update Aeq, beq so that our spike solutions, after 
         % converting to inferred latents, satisfy the kinematics 
         % constraints under the mapping in latents
-        [~, beta] = tools.convertRawSpikesToRawLatents(dec, ...
-            zeros(1,nd), makeFAOrthogonal);
+        [~, beta] = tools.convertRawSpikesToRawLatents(dec, zeros(1,nd));
         muGlob = dec.spikeCountMean;
         Aeq = Aeq*beta;
         beqs = bsxfun(@plus, beqs, Aeq*muGlob');
@@ -83,7 +86,7 @@ function Zs = minL1Norm(mu, Aeq, beqs, lb, ub)
     nt = size(beqs,2);
     Zs = nan(nt, nd);
     for t = 1:nt
-        if mod(t, 500) == 0
+        if mod(t, 1000) == 0
             disp([num2str(t) ' of ' num2str(nt)]);
         end
         % linprog:
@@ -112,7 +115,7 @@ function [Zs, isRelaxed] = minL2Norm(mu, Aeq, beqs, lb, ub)
     Zs = nan(nt, nd);
     isRelaxed = false(nt, 1);
     for t = 1:nt        
-        if mod(t, 500) == 0
+        if mod(t, 1000) == 0
             disp(['Fitting timestep ' num2str(t) ' of ' num2str(nt)]);
         end
         [z, ~, exitflag] = quadprog(H, -mu, A, b, Aeq, beqs(:,t), ...

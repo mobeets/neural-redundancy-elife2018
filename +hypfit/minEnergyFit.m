@@ -1,70 +1,44 @@
 function [Z,out] = minEnergyFit(Tr, Te, dec, opts)
+% aka "Minimal Firing" (Figure 2A)
+% 
+% for each timestep in the test data (Te), finds the spiking activity with
+% minimum norm such that we reproduce the observed output-potent activity
+% subject to constraints on min/max firing per channel
+% 
     if nargin < 4
         opts = struct();
     end
-    defopts = struct('minType', 'baseline', ...
-        'nanIfOutOfBounds', false, 'fitInLatent', false, ...
-        'grpName', 'thetaActualGrps', 'makeFAOrthogonal', false, ...
+    defopts = struct('nanIfOutOfBounds', false, ...
         'noiseDistribution', 'poisson', 'pNorm', 2, 'nReps', 10, ...
         'obeyBounds', true, 'sigmaScale', 1.0, 'addSpikeNoise', true);
     opts = tools.setDefaultOptsWhenNecessary(opts, defopts);
-    dispNm = ['minEnergyFit (' opts.minType ')'];
+    dispNm = 'minimal-firing';
     
-    if opts.fitInLatent
-        Y1 = Tr.latents;
-        Y2 = Te.latents;
-    else
-        Y1 = Tr.spikes;
-        Y2 = Te.spikes;
-    end
+    Y1 = Tr.spikes;
+    Y2 = Te.spikes;
+    sigma = opts.sigmaScale*dec.spikeCountStd; % std deviation per channel
     
-    % set minimum, in latent or spike space
-    if strcmpi(opts.minType, 'baseline') && opts.fitInLatent
-        mu = [];
-    elseif strcmpi(opts.minType, 'baseline') && ~opts.fitInLatent
-        mu = dec.spikeCountMean;
-    elseif strcmpi(opts.minType, 'minimum') && opts.fitInLatent        
-        zers = zeros(size(Tr.spikes,2), 1);
-        mu = tools.convertRawSpikesToRawLatents(dec, zers);
-    elseif strcmpi(opts.minType, 'minimum') && ~opts.fitInLatent
-        mu = [];
-    elseif strcmpi(opts.minType, 'best')
-        assert(opts.pNorm == 2, 'best-mean assumed to use L2 norm');
-        assert(~opts.fitInLatent);
-%         mu = findBestMean(Tr.spikes, Tr.NB_spikes, Tr.(opts.grpName));
-        mu = hypfit.findBestNeuronMean(Tr.latents, ...
-            Te.NB, Te.RB, Tr.(opts.grpName), dec, ...
-            0.1*max(Tr.spikes));
-        out.bestMean = mu;
-        if any(mu < 0)
-            warning(['Best mean has negative rates: ' num2str(mu)]);
-        end
-    else
-        assert(false, ['Invalid minType for ' dispNm]);
-    end
-    sigma = opts.sigmaScale*dec.spikeCountStd;
-    
-    % set upper and lower bounds
+    % set upper and lower bounds of firing rate per channel
     if opts.obeyBounds
         lb = 1.0*min(Y1); ub = 1.0*max(Y1);
     else
         lb = []; ub = [];
     end
     
-    % solve minimization for each timepoint
+    % solve minimum-norm spiking problem for each timestep
     [nt, nu] = size(Y2);
-    [U, isRelaxed] = hypfit.findAllMinNormFiring(Te, mu, ...
-        lb, ub, dec, nu, opts.fitInLatent, ...
-        opts.pNorm, opts.makeFAOrthogonal);
+    [U, isRelaxed] = hypfit.findAllMinNormFiring(Te, [], lb, ub, dec, ...
+        nu, false, opts.pNorm);
     nrs = sum(isRelaxed);
     if nrs > 0
         disp([dispNm ' relaxed non-negativity constraints ' ...
             'and bounds for ' num2str(nrs) ' timepoint(s).']);
     end
 
-    % add noise
+    % add spiking noise (either gaussian or poisson)
+    % resampling if necessary to obey firing rate constraints per channel
     nis = 0;
-    if ~opts.fitInLatent && opts.addSpikeNoise
+    if opts.addSpikeNoise
         U0 = U;
         if strcmpi(opts.noiseDistribution, 'gaussian')
             U = normrnd(U0, repmat(sigma, nt, 1));
@@ -98,9 +72,9 @@ function [Z,out] = minEnergyFit(Tr, Te, dec, opts)
     if nis > 0
         disp([dispNm ' could not add noise to ' num2str(nis) ...
             ' timepoint(s)']);
-    end 
+    end
     
-    % count points out of bounds
+    % count points out of bounds or on bounds
     nlbs = 0; nubs = 0;
     if numel(lb) > 0
         nlbs = sum(any(U < repmat(lb, nt, 1), 2));
@@ -112,54 +86,19 @@ function [Z,out] = minEnergyFit(Tr, Te, dec, opts)
         disp([dispNm ' hit lower bounds ' num2str(nlbs) ...
             ' time(s) and upper bounds ' num2str(nubs) ' time(s).']);
     end
-    
-    if opts.fitInLatent        
-        Z = U;
-        if opts.addSpikeNoise
-            % project to spikes, then infer latents
-            sps = tools.latentsToSpikes(Z, dec, true, true);
-            Z = tools.convertRawSpikesToRawLatents(dec, sps');
-        end
-    else        
-        if opts.obeyBounds && opts.nanIfOutOfBounds
-            isOutOfBounds = tools.boundsFcn(Tr.spikes, 'spikes', dec, true);
-            ixOob = isOutOfBounds(U);
-            U(ixOob,:) = nan;
-        end
-        out.U = U;
-        Z = tools.convertRawSpikesToRawLatents(dec, U', ...
-                opts.makeFAOrthogonal);
+    % set to nan if out of bounds
+    if opts.obeyBounds && opts.nanIfOutOfBounds
+        isOutOfBounds = tools.boundsFcn(Tr.spikes, 'spikes', dec, true);
+        ixOob = isOutOfBounds(U);
+        U(ixOob,:) = nan;
     end
+    out.U = U;
     
+    % convert predictions back to factor activity
+    Z = tools.convertRawSpikesToRawLatents(dec, U');
     NB2 = Te.NB;
     RB2 = Te.RB;
-    Zr = Te.latents*(RB2*RB2');
-    Z = Z*(NB2*NB2') + Zr;
+    Zr = Te.latents*(RB2*RB2'); % = actual potent activity
+    Z = Z*(NB2*NB2') + Zr; % = true potent + predicted null
        
 end
-
-function m = findBestMean(Z, NB, gs, enforceNonneg)
-% we want to minimize the mean null space error across groups
-% to solve this, we calculate the mean null space activity per group, M
-% and then find the closest null space mean, n, as follows:
-%   n := argmin_n sum_i || n - M(i) ||_2
-%          (sum is over grps)
-%        = argmin_n sum_i n'*n - 2*n'*M(i) + const
-%        = argmin_n = d*n'*n - 2*n'*sum(M)
-%        = argmin_n = sum_j d*n_j^2 - 2*n_j*sum(M)_j
-%      so this problem can be solved separately for each n_j
-%        and setting the derivative equal to zero yields:
-%            2*d*n_j - 2*sum(M)_j = 0 -> n_j = sum(M)_j/d
-%     
-    if nargin < 4
-        enforceNonneg = true;
-    end
-    m = mean(grpstats(Z*NB, gs))*NB';
-    if enforceNonneg
-        % if we're in spike space, we also want NB*n >= 0
-        % n.b. the below is not optimal, but in practice, the solution 
-        % tends to obey our constraint anyway
-        m = max(m, 0);
-    end
-end
-
