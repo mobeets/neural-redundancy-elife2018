@@ -118,11 +118,11 @@ function makeBoxPlot(pts, clrs, lw)
     % hide horizontal part of error bars
     h = findobj(gcf,'tag','Upper Adjacent Value');
     for jj = 1:numel(h)
-        h(jj).Color = 'None';
+        set(h(jj), 'Color', 'None');
     end
     h = findobj(gcf,'tag','Lower Adjacent Value');
     for jj = 1:numel(h)
-        h(jj).Color = 'None';
+        set(h(jj), 'Color', 'None');
     end
     
     h = findobj(gcf,'tag','Box');
