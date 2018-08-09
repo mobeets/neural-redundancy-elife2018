@@ -112,7 +112,7 @@ function plotSSSEllipseFig(CA, CB, opts)
     box off; axis off;
     plot.setPrintSize(fig, opts);
     if opts.doSave
-        plot.export_fig(gcf, fullfile(opts.saveDir, ...
+        export_fig(gcf, fullfile(opts.saveDir, ...
             [opts.filename '.' opts.ext]));
     end
 end

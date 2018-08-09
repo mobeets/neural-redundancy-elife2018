@@ -2,6 +2,7 @@ function plotAll(runName, doSave)
     if nargin < 2
         doSave = false;
     end
+    addpath(fullfile('export_fig'));
     
     % Figures 2-4
     fitName = 'Int2Pert_yIme_';

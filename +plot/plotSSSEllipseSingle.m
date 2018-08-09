@@ -70,6 +70,6 @@ function plotSSSEllipseSingle(YA, YB, CA, CB, opts)
 
     plot.setPrintSize(fig, opts);
     if opts.doSave
-        plot.export_fig(gcf, fullfile(opts.saveDir, ...
+        export_fig(gcf, fullfile(opts.saveDir, ...
             [opts.filename '.' opts.ext]));
     end

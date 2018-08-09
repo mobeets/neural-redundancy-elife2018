@@ -108,7 +108,7 @@ function Ps = plotError(errs, nms, opts)
     end
         
     if opts.doSave
-        plot.export_fig(gcf, fullfile(opts.saveDir, ...
+        export_fig(gcf, fullfile(opts.saveDir, ...
             [opts.filename '.' opts.ext]));
     end
 end

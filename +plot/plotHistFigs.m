@@ -84,7 +84,7 @@ function data = plotGrid(H0, Hs, xs, hypNms, fitName, err, opts)
         
         if opts.doSave
             fnm = [fitName '_marginalHist_' hypNms{jj}];
-            plot.export_fig(gcf, fullfile(opts.saveDir, ...
+            export_fig(gcf, fullfile(opts.saveDir, ...
                 [fnm '.' opts.saveExt]));
         end
     end
@@ -144,7 +144,7 @@ function plotSingleton(hs1, Hs, xs, hypNms, fitName, opts)
         plot.plotSingleHistFig(hs1, hs2, xs, opts);        
         if opts.doSave
             fnm = [fitName '_marginalHistSingle_' hypNms{ii}];
-            plot.export_fig(gcf, fullfile(opts.saveDir, ...
+            export_fig(gcf, fullfile(opts.saveDir, ...
                 [fnm '.' opts.saveExt]));
         end
     end
