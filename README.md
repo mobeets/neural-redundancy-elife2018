@@ -15,4 +15,6 @@ By default, all figures will be written to `data/plots/example`.
 
 ## Requirements
 
-Tested on a Mac running Matlab 2015a, and Linux running Matlab 2018. Will likely work for any Matlab version after around 2008a.
+Tested on Matlab 2015a on both Mac and Linux, and on Matlab 2018a on Linux. Will likely (hopefully!) work for any Matlab version after around 2011a.
+
+To generate figures as '.pdf', you will need to install [ghostscript](https://ghostscript.com/).
