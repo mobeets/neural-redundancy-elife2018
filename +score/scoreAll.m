@@ -19,7 +19,6 @@ function S = scoreAll(F, grpName)
     
     % save info
     S.datestr = F.datestr;
-    S.timestamp = datestr(datetime);
     S.grpName = grpName;
     S.gs = gs;
     S.ixGs = ix;
