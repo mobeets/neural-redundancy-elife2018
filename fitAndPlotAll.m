@@ -6,6 +6,7 @@ hnms = {'minimal-deviation', 'uncontrolled-uniform', ...
 % hnms = [hnms {'minimal-firing'}]; % skip by default because it's slow
 
 savePlots = true;
+plotExt = 'png'; % or 'pdf'
 doOverwrite = false;
 dts = tools.getDatesInDir;
 
@@ -35,4 +36,4 @@ pred.fitAndScoreSessions(saveDir, grpName, opts, hnms, dts, doOverwrite);
 
 %% make all figures
 
-plot.plotAll(runName, savePlots);
+plot.plotAll(runName, savePlots, plotExt);
