@@ -78,8 +78,11 @@ function Ps = plotError(errs, nms, opts)
         hss = findobj(gcf, 'tag', 'sigstar_stars');
         for jj = 1:numel(hs)
             cy = ytrg - (jj-1)*yspace;
-            hs(jj).YData = cy*ones(4,1);
-            hss(jj).Position(2) = cy;
+            set(hs(jj), 'YData', cy*ones(4,1));
+            pos = get(hss(jj), 'Position');
+            pos(2) = cy;
+            set(hss(jj), 'Position', pos);
+%             hss(jj).Position(2) = cy;
         end
         
     end    

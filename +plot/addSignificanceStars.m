@@ -15,7 +15,7 @@ function Ps = addSignificanceStars(errs, baseCol, fig, starSize)
     % edit star size
     h = findall(fig, 'Tag', 'sigstar_stars');
     for ii = 1:numel(h)
-        h(ii).FontSize = starSize;
+        set(h(ii), 'FontSize', starSize);
     end
     
 end
