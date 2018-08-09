@@ -47,7 +47,11 @@ function Ps = plotError(errs, nms, opts)
         set(gca, 'XTickLabel', nms);    
         xlim([0.25 numel(nms)+0.75]);
         if max(cellfun(@numel, nms)) > 1 % if longest name > 3 chars
-            set(gca, 'XTickLabelRotation', 45);
+            try
+                set(gca, 'XTickLabelRotation', 45);
+            catch
+                tmp = 1; % ignore for older matlab versions
+            end
         end
     end
         

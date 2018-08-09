@@ -20,8 +20,10 @@ function plotSSSEllipseFig(CA, CB, opts)
         dts = arrayfun(@num2str, opts.dts, 'uni', 0);
         for ii = 1:numel(mnks)
             % get first date for each monkey
-            inds(ii) = find(tools.getMonkeyDateFilter(dts, mnks(ii)), ...
-                1, 'first');
+            ind = find(tools.getMonkeyDateFilter(dts, mnks(ii)), 1, 'first');
+            if ~isempty(ind)
+                inds(ii) = ind;
+            end
         end
     else
         inds = [];

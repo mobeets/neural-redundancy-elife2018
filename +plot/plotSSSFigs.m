@@ -5,7 +5,7 @@ if ~exist('plotExt', 'var')
     plotExt = 'png';
 end
 doSaveData = false;
-exInds = [4 1]; % example session and angle indices (used below)
+exInds = [2 1]; % example session and angle indices (used below)
 [errs, C2s, C1s, Ys, dts, hypnms, es] = plot.getSSS([fitName runName], ...
     exInds);
 
