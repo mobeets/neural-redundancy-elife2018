@@ -9,7 +9,7 @@ function plotHistFigs(fitName, runName, dt, opts, hypNms)
         hypNms = {};
     end
     defopts = struct('doSave', false, ...
-        'saveExt', 'pdf', 'ymax', nan, 'rowStartInd', nan, ...
+        'ext', 'pdf', 'ymax', nan, 'rowStartInd', nan, ...
         'doPca', true, 'grpInds', 1:8, 'dimInds', 1:3, 'saveData', false);
     opts = tools.setDefaultOptsWhenNecessary(opts, defopts);
     
@@ -89,7 +89,7 @@ function data = plotGrid(H0, Hs, xs, hypNms, fitName, err, opts)
         if opts.doSave
             fnm = [fitName '_marginalHist_' hypNms{jj}];
             export_fig(gcf, fullfile(opts.saveDir, ...
-                [fnm '.' opts.saveExt]));
+                [fnm '.' opts.ext]));
         end
     end
 end
@@ -148,7 +148,7 @@ function plotSingleton(hs1, Hs, xs, hypNms, fitName, opts)
         if opts.doSave
             fnm = [fitName '_marginalHistSingle_' hypNms{ii}];
             export_fig(gcf, fullfile(opts.saveDir, ...
-                [fnm '.' opts.saveExt]));
+                [fnm '.' opts.ext]));
         end
     end
 end

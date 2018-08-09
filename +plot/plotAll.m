@@ -1,17 +1,20 @@
-function plotAll(runName, doSave)
+function plotAll(runName, doSave, plotExt)
 % Generates figures using all fits from running fitAndPlotAll
 % 
     if nargin < 2
         doSave = false; % used implicitly by plotting functions below
     end
-    addpath(fullfile('export_fig')); % required to save pretty pdfs
+    if nargin < 3
+        plotExt = 'png'; % or 'pdf'
+    end
+    addpath(fullfile('export_fig')); % required to save pretty figures
     
     % Figures 2-4
     fitName = 'Int2Pert_yIme_';
     exampleSession = '20131218';
     if checkFitsExist(runName, fitName, 'Figures 2-4', exampleSession)
         plot.plotHistFigs(fitName, runName, exampleSession, ...
-            struct('doSave', doSave));
+            struct('doSave', doSave, 'ext', plotExt));
     end
     
     % Figure 5

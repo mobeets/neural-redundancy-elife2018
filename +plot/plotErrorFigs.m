@@ -6,6 +6,9 @@ doSaveData = false;
 showYLabel = true;
 showMnkNm = false;
 doAbbrev = false;
+if ~exist('plotExt', 'var')
+    plotExt = 'png';
+end
 for ii = 1:numel(errNms)
     for jj = 1:numel(mnkNms)
         doAbbrev = ~strcmpi(mnkNms{jj}, 'Nelson');
@@ -15,6 +18,6 @@ for ii = 1:numel(errNms)
         end
         plot.plotErrorFig(fitName, runName, errNms{ii}, ...
             mnkNm, hypsToShow, doSave, doAbbrev, showYLabel, showMnkNm, ...
-            [], doSaveData, figureName);
+            [], doSaveData, figureName, plotExt);
     end
 end
