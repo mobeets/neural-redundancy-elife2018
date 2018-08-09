@@ -14,12 +14,12 @@ function D = prepSession(D, opts)
     % find train and test inds
     Tr = D.blocks(opts.trainBlk);
     Te = D.blocks(opts.testBlk);
-    ixTr = true(numel(Tr.time),1);
-    ixTe = true(numel(Te.time),1);
+    ixTr = true(size(Tr.vel,1),1);
+    ixTe = true(size(Te.vel,1),1);
     
     % ignore freeze period activity in test set
     if opts.skipFreezePeriod
-        ixTe = ixTe & Te.time >= 6;
+        ixTe = ixTe & ~Te.isFreezePeriod;
     end
     
     % make train and test structs
@@ -43,14 +43,14 @@ function C = prepToFit(B, ix, blkInd, opts)
     % cursor-target info
     ths = B.(opts.thetaNm);
     C.thetas = ths(ix,:);
-    C.target = B.target(ix,:);
+%     C.target = B.target(ix,:);
     
     % velocity info
     vels = B.(opts.velNm);
     velNexts = B.(opts.velNextNm);
     C.vel = vels(ix,:);
     C.velNext = velNexts(ix,:);
-    C.pos = B.pos(ix,:);
+%     C.pos = B.pos(ix,:);
     
     % add mapping and nul/row bases
     curMpg = B.(opts.mapNm);
@@ -65,8 +65,8 @@ function C = prepToFit(B, ix, blkInd, opts)
     C.NB_spikes = B.(opts.mapNm_spikes).NulM2;
     C.RB_spikes = B.(opts.mapNm_spikes).RowM2;
     
-    C.time = B.time(ix);
-    C.trial_index = B.trial_index(ix);
+%     C.time = B.time(ix);
+%     C.trial_index = B.trial_index(ix);
     C.block_index = blkInd;
     
     if isempty(opts.fieldsToAdd)

@@ -4,3 +4,4 @@ data/sessions/*
 data/fits/*
 data/plots/*
 !/**/.gitkeep
+_*.m
