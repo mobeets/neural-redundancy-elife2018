@@ -1,4 +1,11 @@
 function fitAndScoreSessions(saveDir, grpName, opts, hnms, dts, doOverwrite)
+% for all sessions in dts (cell), and for all hypotheses in hnms (cell),
+% generate fits using options in opts (struct), group data by grpName (str),
+% and save fits in saveDir (str)
+% 
+% grpName refers to the fieldname that includes the cursor-target angle
+%      bin for each time step (e.g., 0, 45, ..., 315 deg)
+% 
     if nargin < 4
         hnms = {};
     end
@@ -8,10 +15,11 @@ function fitAndScoreSessions(saveDir, grpName, opts, hnms, dts, doOverwrite)
     if nargin < 6
         doOverwrite = false;
     end
-
+    
+    % get hypothesis fitting functions and default options
     hyps = pred.getDefaultHyps(hnms, grpName);
 
-    % init saveDir and save opts
+    % create saveDir and save the opts struct
     saveDir = fullfile('data', 'fits', saveDir);
     if ~doOverwrite && exist(saveDir, 'dir')
         error('Cannot fit because directory already exists.');
@@ -21,13 +29,15 @@ function fitAndScoreSessions(saveDir, grpName, opts, hnms, dts, doOverwrite)
             'grpName', 'opts', 'hyps', 'dts');
     end
 
-    % fit sessions
+    % fit all sessions
     disp(['Fitting and scoring ' num2str(numel(dts)) ' sessions...']);
     for ii = 1:numel(dts)
         try
             disp(['Processing ' dts{ii} '...']);
+            % fit each hypothesis
             [F,~] = pred.fitSession(dts{ii}, hyps, grpName, opts);
-            S = score.scoreAll(F, grpName); % score each hyp
+            % score each hypothesis  in terms of mean, cov, and histograms
+            S = score.scoreAll(F, grpName);
             disp('---------');
         catch exception
             msgText = getReport(exception, 'basic'); % no stack trace
@@ -35,6 +45,7 @@ function fitAndScoreSessions(saveDir, grpName, opts, hnms, dts, doOverwrite)
             continue;
         end
 
+        % save fits and scores
         fnm = fullfile(saveDir, [dts{ii} '_fits.mat']);
         snm = fullfile(saveDir, [dts{ii} '_scores.mat']);
         save(fnm, 'F');

@@ -1,4 +1,9 @@
 function D = prepSession(D, opts)
+% prepare session data (D) for fitting using opts (struct)
+% e.g., training data might be the first block, and testing data would be
+% the second block. also, if using IME, we need to change the field names
+% that we use for fitting and grouping.
+% 
     if nargin < 2
         opts = struct();
     end
@@ -43,14 +48,12 @@ function C = prepToFit(B, ix, blkInd, opts)
     % cursor-target info
     ths = B.(opts.thetaNm);
     C.thetas = ths(ix,:);
-%     C.target = B.target(ix,:);
     
     % velocity info
     vels = B.(opts.velNm);
     velNexts = B.(opts.velNextNm);
     C.vel = vels(ix,:);
     C.velNext = velNexts(ix,:);
-%     C.pos = B.pos(ix,:);
     
     % add mapping and nul/row bases
     curMpg = B.(opts.mapNm);
@@ -64,9 +67,6 @@ function C = prepToFit(B, ix, blkInd, opts)
     C.M2_spikes = B.(opts.mapNm_spikes).M2;
     C.NB_spikes = B.(opts.mapNm_spikes).NulM2;
     C.RB_spikes = B.(opts.mapNm_spikes).RowM2;
-    
-%     C.time = B.time(ix);
-%     C.trial_index = B.trial_index(ix);
     C.block_index = blkInd;
     
     if isempty(opts.fieldsToAdd)

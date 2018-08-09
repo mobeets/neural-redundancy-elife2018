@@ -1,4 +1,7 @@
 function grps = thetaGroup(xs, centers)
+% bin angles in xs [n x 1] (in degrees) to the nearest angle in centers
+% e.g., tools.thetaGroup([5 -5 40 320], tools.thetaCenters) == [0 0 45 315]
+% 
     dfs = diff(centers)/2;
     theta_tol = dfs(1);
     assert(norm(dfs - theta_tol) < 1e-4);

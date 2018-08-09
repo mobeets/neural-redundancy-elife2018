@@ -1,6 +1,7 @@
 function S = scoreAll(F, grpName)
-% F is a fits object
-% gs is a vector of groups for binning latents before scoring
+% F: fits object
+% grpName: str; fieldname containing the grouping values
+%    (e.g., cursor-target angle)
 %
 % S is a score object:
 %     S
@@ -8,7 +9,7 @@ function S = scoreAll(F, grpName)
 %       gs: [5148x1 double]
 %       grps: [8x1 double]
 %       scores(:):
-%         name: 'cloud'
+%         name: 'fixed-distribution'
 %         meanError: 0.54
 %         covError: 112.0
 %         histError: 0.58

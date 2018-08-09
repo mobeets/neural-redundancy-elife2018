@@ -9,10 +9,6 @@ function h = optimalBinCount(Y, gs, minBinSz)
 %  * http://toyoizumilab.brain.riken.jp/hideaki/res/histogram.html
 %  * http://www.utdallas.edu/epps/statbook/apps/histogram.php
 %
-
-%     Y = D.hyps(1).nullActivity.zNull;
-%     gs = D.blocks(2).thetaActualGrps;
-%     gs = ones(size(Y,1),1);
     if nargin < 3
         minBinSz = 10;
     end

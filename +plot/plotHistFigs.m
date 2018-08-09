@@ -1,6 +1,12 @@
-function plotHistFigs(fitName, runName, dt, hypNms, opts)
-    if nargin < 5
+function plotHistFigs(fitName, runName, dt, opts, hypNms)
+% plot marginal histograms of hypothesis predictions during an example
+% session, as in Figures 2-4
+% 
+    if nargin < 4
         opts = struct();
+    end
+    if nargin < 5
+        hypNms = {};
     end
     defopts = struct('doSave', false, ...
         'saveExt', 'pdf', 'ymax', nan, 'rowStartInd', nan, ...
@@ -30,7 +36,7 @@ function plotHistFigs(fitName, runName, dt, hypNms, opts)
     NB = F.test.NB;
     Y0 = F.test.latents;
     mu = nanmean(Y0*NB);
-    if opts.doPca
+    if opts.doPca % for sorting dims by variance explained
         [coeff, ~] = pca(Y0*NB);
     else
         coeff = eye(size(mu,2));
@@ -48,8 +54,8 @@ function plotHistFigs(fitName, runName, dt, hypNms, opts)
     end
 
     useDataOnlyForRange = false; % false -> use data and preds to set range
-    [Hs, Xs, ~] = score.histsFcn([YN0; YNc], ...
-        S.gs(ix), useDataOnlyForRange);
+    [Hs, Xs, ~] = score.histsFcn([YN0; YNc], S.gs(ix), ...
+        useDataOnlyForRange);
     H0 = Hs{1}; Hs = Hs(2:end);
     [H0, Hs, xs, ymx] = filterHists(H0, Hs, Xs, opts);
     if isnan(opts.ymax)
@@ -70,8 +76,6 @@ function data = plotGrid(H0, Hs, xs, hypNms, fitName, err, opts)
     for jj = 1:numel(Hs)        
         Hc = Hs{jj};
         opts.clr2 = plot.hypColor(hypNms{jj});
-%         ix = strcmp(hypNms{jj}, {S.scores.name});
-%         opts.histError = 100*S.scores(ix).histError;
         opts.histError = 100*err(jj);
         plot.plotGridHistFig(H0, Hc, xs, opts);
         
@@ -115,7 +119,6 @@ function plotSingleton(hs1, Hs, xs, hypNms, fitName, opts)
     % plot and save all hists
     opts.clr1 = plot.hypColor('data');
     opts.title = ['Output-null activity, dim. ' num2str(opts.dimInds)];
-%     opts.dimScale = opts.dimScales(opts.dimInds);
     for ii = 1:numel(Hs)
         hs2 = Hs{ii};
         opts.clr2 = plot.hypColor(hypNms{ii});

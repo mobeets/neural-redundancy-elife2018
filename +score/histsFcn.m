@@ -3,7 +3,7 @@ function [Hs, Xs, nbins] = histsFcn(Ys, gs, useFirstForRange, nbins)
 %
 % n.b. when making hists for display,
 %   we will want to restrict range of Xs to only the first hyp,
-%   and also we will want to have first rotated the NB via PCA
+%   also we want to have first rotated the NB via PCA for visualization
 % 
     if nargin < 3
         useFirstForRange = false;

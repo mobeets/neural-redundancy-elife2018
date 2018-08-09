@@ -7,13 +7,13 @@ function F = fitHyps(D, hyps)
 %     - latents
 %     - spikes
 %     - NB, RB, M0, M1, M2
-%     - thetas (for hab)
-%     - vel, velNext (for min/bas)
+%     - thetas (for persistent-strategy)
+%     - vel, velNext (for minimal-firing)
 %
 % hyps is struct array with fields:
 %     - name
 %     - opts
-%     - fitFcn 
+%     - fitFcn (accepting Train and Test data, decoder, and options)
 %
 
     % save only the data critical for scoring

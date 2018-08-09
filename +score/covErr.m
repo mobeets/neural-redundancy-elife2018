@@ -1,10 +1,10 @@
 function err = covErr(D1, D2)
 % Riemannian distance between the covariance matrices of D1 and D2
 % 
-% src: "A Metric for Covariance Matrices"
+% source: "A Metric for Covariance Matrices"
 % http://www.ipb.uni-bonn.de/pdfs/Forstner1999Metric.pdf
 %
-% note: invariant under scaling and rotation,
+% note: this metric is invariant under scaling and rotation,
 %     but sensitive to rank-deficient matrices
 %     (hence the 'qz' and 'real' below)
 %

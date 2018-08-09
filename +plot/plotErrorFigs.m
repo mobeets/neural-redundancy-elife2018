@@ -1,3 +1,5 @@
+% for plotting errors of each hypothesis
+% in terms of histogram, mean, and covariance errors, as in Figure 5
 
 hypsToShow = {};
 doSaveData = false;
@@ -6,22 +8,10 @@ showMnkNm = false;
 doAbbrev = false;
 for ii = 1:numel(errNms)
     for jj = 1:numel(mnkNms)
-        if strcmpi(errNms{ii}, 'histError')
-            showMnkNm = false;
-        else
-            showMnkNm = false;
-        end
-        if strcmpi(mnkNms{jj}, 'Nelson')
-            doAbbrev = false;
-        else
-            doAbbrev = true;
-        end
-        if strcmpi(mnkNms{jj}, 'ALL')
+        doAbbrev = ~strcmpi(mnkNms{jj}, 'Nelson');
+        mnkNm = mnkNms{jj};
+        if strcmpi(mnkNm, 'ALL')
             mnkNm = '';
-            showYLabel = true;
-            doAbbrev = false;
-        else
-            mnkNm = mnkNms{jj};
         end
         plot.plotErrorFig(fitName, runName, errNms{ii}, ...
             mnkNm, hypsToShow, doSave, doAbbrev, showYLabel, showMnkNm, ...

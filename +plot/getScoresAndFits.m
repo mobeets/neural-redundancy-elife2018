@@ -1,5 +1,5 @@
 function [S,F] = getScoresAndFits(fitsName, dts)
-%
+% load all fits and scores from file
     if nargin < 2
         dts = {};
     end

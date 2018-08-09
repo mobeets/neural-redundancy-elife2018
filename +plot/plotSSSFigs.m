@@ -1,15 +1,17 @@
-%% load
+%% load SSS data (n.b. SSS = Steve's Special Space)
+% for making plots as in Figure 6
 
 doSaveData = false;
-exInds = [4 1]; % from exInd, below
-[errs, C2s, C1s, Ys, dts, hypnms, es] = plot.getSSS([fitName runName], exInds);
+exInds = [4 1]; % example session and angle indices (used below)
+[errs, C2s, C1s, Ys, dts, hypnms, es] = plot.getSSS([fitName runName], ...
+    exInds);
 
 saveDir = fullfile('data', 'plots', runName, figureName);
 if doSave && ~exist(saveDir, 'dir')
     mkdir(saveDir);
 end
 
-%% plot avgs
+%% plot average change in variance predicted by each hypothesis
 
 mnkNms = {};
 hypsToShow = hypnms;
@@ -20,7 +22,7 @@ plot.plotSSSErrorFig(cerrs, hypnms, dtsc, mnkNms, ...
     hypsToShow, doSave, false, saveDir, [fitName '_avg'], ...
     doSaveData, runName, fitName);
 
-%% plot ellipses - data
+%% plot covariance ellipses of data for all sessions and velocity angles
 
 hypClrs = [plot.hypColor('data'); [0.6 0.6 0.6]];
 opts = struct('clrs', hypClrs, 'doSave', doSave, 'indsToMark', exInds, ...
@@ -29,11 +31,9 @@ opts = struct('clrs', hypClrs, 'doSave', doSave, 'indsToMark', exInds, ...
     'saveDir', saveDir, 'filename', [fitName '_data']);
 plot.plotSSSEllipseFig(C1s, C2s(:,:,end), opts);
 
-%% plot example ellipse - data
+%% plot covariance ellipse of data for one session and velocity angle
 
 hypClrs = [plot.hypColor('data'); 0.7*ones(1,3)];
-% hypClrs = [plot.hypColor('data'); plot.hypColor('constant-cloud')];
-
 opts = struct('clrs', hypClrs, 'doSave', doSave, 'LineWidth', 3, ...
     'MarkerSize', 10, ...
     'saveDir', saveDir, 'filename', [fitName '_example']);

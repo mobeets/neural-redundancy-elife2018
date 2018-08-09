@@ -84,14 +84,3 @@ function [errs, C2s, C1s, Ys, dts, hypnms, es] = getSSS(fitsName, inds)
         end
     end    
 end
-
-function err = err_bootstrap(Y1, Y2, errFcn, rs1, rs2)
-    es = nan(size(rs1,2),1);
-    for ll = 1:size(rs1,2)
-        Y1c = Y1(rs1(:,ll),:);
-        Y2c = Y2(rs2(:,ll),:);
-        es(ll) = errFcn(nancov(Y1c), nancov(Y2c));
-    end
-    err = mean(es);
-end
-
