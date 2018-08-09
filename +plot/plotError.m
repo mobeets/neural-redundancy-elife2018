@@ -120,12 +120,16 @@ function makeBoxPlot(pts, clrs, lw)
 
     % hide horizontal part of error bars
     h = findobj(gcf,'tag','Upper Adjacent Value');
-    for jj = 1:numel(h)
-        set(h(jj), 'Color', 'None');
-    end
-    h = findobj(gcf,'tag','Lower Adjacent Value');
-    for jj = 1:numel(h)
-        set(h(jj), 'Color', 'None');
+    try
+        for jj = 1:numel(h)
+            set(h(jj), 'Color', 'None');
+        end
+        h = findobj(gcf,'tag','Lower Adjacent Value');
+        for jj = 1:numel(h)
+            set(h(jj), 'Color', 'None');
+        end
+    catch
+        tmp = 1; % must be an older version of matlab, so never mind...
     end
     
     h = findobj(gcf,'tag','Box');
