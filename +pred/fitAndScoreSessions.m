@@ -22,7 +22,9 @@ function fitAndScoreSessions(saveDir, grpName, opts, hnms, dts, doOverwrite)
     % create saveDir and save the opts struct
     saveDir = fullfile('data', 'fits', saveDir);
     if ~doOverwrite && exist(saveDir, 'dir')
-        error('Cannot fit because directory already exists.');
+        if ~handleFitsExist(saveDir);
+        	return;
+        end
     elseif ~exist(saveDir, 'dir')
         mkdir(saveDir);
         save(fullfile(saveDir, 'opts.mat'), ...
@@ -52,4 +54,21 @@ function fitAndScoreSessions(saveDir, grpName, opts, hnms, dts, doOverwrite)
         save(snm, 'S');
     end
 
+end
+
+function doContinue = handleFitsExist(saveDir)
+    disp(['Fit directory already exists at ''' ...
+        saveDir '''.']);
+    prompt = 'Overwrite contents? (y/n): ';
+    out = input(prompt, 's');
+    if isempty(out)
+        out = 'y';
+    end
+    if strcmpi(out, 'y')
+        warning('Overwriting fits.');
+        doContinue = true;
+    else
+        warning('Quitting because fits already exist.');
+        doContinue = false;
+    end
 end
