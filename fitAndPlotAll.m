@@ -3,7 +3,7 @@
 runName = 'example';
 hnms = {'minimal-deviation', 'uncontrolled-uniform', ...
     'uncontrolled-empirical', 'persistent-strategy', 'fixed-distribution'};
-% hnms = [hnms {'minimal-firing'}]; % skip by default because it's slow
+hnms = [hnms {'minimal-firing'}]; % skip by default because it's slow
 
 savePlots = true;
 plotExt = 'png'; % or 'pdf'

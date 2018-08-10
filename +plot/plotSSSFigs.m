@@ -5,7 +5,7 @@ if ~exist('plotExt', 'var')
     plotExt = 'png';
 end
 doSaveData = false;
-exInds = [2 1]; % example session and angle indices (used below)
+exInds = [1 1]; % example session and angle indices (used below)
 [errs, C2s, C1s, Ys, dts, hypnms, es] = plot.getSSS([fitName runName], ...
     exInds);
 
@@ -13,26 +13,28 @@ saveDir = fullfile('data', 'plots', runName, figureName);
 if doSave && ~exist(saveDir, 'dir')
     mkdir(saveDir);
 end
-if numel(dts) == 1
-    warning('Must fit more than one session. Skipping'); return;
-end
 
 %% plot average change in variance predicted by each hypothesis
 
 mnkNms = {};
 hypsToShow = hypnms;
 cerrs = squeeze(nanmean(log(errs),2));
-dtsc = dts(~all(isnan(cerrs),2));
-cerrs = cerrs(~all(isnan(cerrs),2),:); % drop nans if all in session
-plot.plotSSSErrorFig(cerrs, hypnms, dtsc, mnkNms, ...
+if numel(dts) > 1
+    dtsc = dts(~all(isnan(cerrs),2));
+    cerrs = cerrs(~all(isnan(cerrs),2),:); % drop nans if all in session
+else
+    dtsc = dts;
+end
+plot.plotSSSErrorFig(cerrs', hypnms, dtsc, mnkNms, ...
     hypsToShow, doSave, false, saveDir, [fitName '_avg'], ...
     doSaveData, runName, fitName, plotExt);
 
 %% plot covariance ellipses of data for all sessions and velocity angles
 
+width = numel(dts)*0.8;
 hypClrs = [plot.hypColor('data'); [0.6 0.6 0.6]];
 opts = struct('clrs', hypClrs, 'doSave', doSave, 'indsToMark', exInds, ...
-    'width', 3.5, 'height', 3, 'dstep', 6, 'XRotation', 0, ...
+    'width', width, 'height', 3, 'dstep', 6, 'XRotation', 0, ...
     'LineWidth', 2, 'dts', cellfun(@str2double, dts), ...
     'saveDir', saveDir, 'filename', [fitName '_data'], 'ext', plotExt);
 plot.plotSSSEllipseFig(C1s, C2s(:,:,end), opts);

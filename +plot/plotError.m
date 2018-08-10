@@ -12,8 +12,8 @@ function Ps = plotError(errs, nms, opts)
     opts = tools.setDefaultOptsWhenNecessary(opts, defopts);
 
     Ps = [];
-    if (numel(errs) == numel(nms)) || numel(errs) == 0
-        warning('Must provide multiple errors per hypothesis. Skipping');
+    if numel(errs) == 0
+        warning('No errors were provided. Skipping.');
         return;
     end
     
@@ -71,7 +71,7 @@ function Ps = plotError(errs, nms, opts)
     h = ylabel(opts.ylbl);
     set(h, 'interpreter', 'tex'); % funky bug somehow caused by boxplot
 
-    if ~isempty(opts.starBaseName)
+    if ~isempty(opts.starBaseName) && size(errs,1) > 1
         bInd = find(ismember(nms, opts.starBaseName));
         Ps = plot.addSignificanceStars(errs, bInd);
         ylim(yl);
@@ -119,6 +119,10 @@ function Ps = plotError(errs, nms, opts)
 end
 
 function makeBoxPlot(pts, clrs, lw)
+    if size(pts,1) == 1
+        % if only one session included, duplicate row so we can show data
+        pts = repmat(pts, 2, 1);
+    end
     bp = boxplot(pts, 'Colors', clrs, ...
         'Symbol', '', 'OutlierSize', 8, 'widths', 0.7);
 
@@ -143,6 +147,10 @@ function makeBoxPlot(pts, clrs, lw)
 end
 
 function makeBarPlot(pts, clrs, lw, nSEs)
+    if size(pts,1) == 1
+        % if only one session included, duplicate row so we can show data
+        pts = repmat(pts, 2, 1);
+    end
     ms = mean(pts);
     bs = nSEs*std(pts)/sqrt(size(pts,1));
     for ii = 1:size(pts,2)

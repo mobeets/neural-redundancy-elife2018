@@ -31,7 +31,9 @@ function plotHistFigs(fitName, runName, dt, opts, hypNms)
     end
     Sa = plot.getScoresAndFits([fitName runName], tools.getDatesInDir);
     errs = plot.getScoreArray(Sa, 'histError');
-    errs = mean(errs(~any(isinf(errs),2),:));
+    if size(errs,1) > 1
+        errs = mean(errs(~any(isinf(errs),2),:));
+    end
     
     NB = F.test.NB;
     Y0 = F.test.latents;

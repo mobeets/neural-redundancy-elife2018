@@ -11,7 +11,7 @@ function plotAll(runName, doSave, plotExt)
     
     % Figures 2-4
     fitName = 'Int2Pert_yIme_';
-    exampleSession = '20131218';
+    exampleSession = getExampleSession();
     if checkFitsExist(runName, fitName, 'Figures 2-4', exampleSession)
         plot.plotHistFigs(fitName, runName, exampleSession, ...
             struct('doSave', doSave, 'ext', plotExt));
@@ -22,15 +22,6 @@ function plotAll(runName, doSave, plotExt)
     errNms = {'histError', 'meanError', 'covError'};
     mnkNms = {'ALL'};
     figureName = 'Figure5';
-    if checkFitsExist(runName, fitName, figureName)
-        plot.plotErrorFigs;
-    end
-    
-    % Figure 5 - Figure supplement 1
-    fitName = 'Int2Pert_yIme_';
-    mnkNms = {'Jeffy', 'Lincoln', 'Nelson'};
-    errNms = {'histError', 'meanError', 'covError'};
-    figureName = 'Figure5-FigureSupplement1';
     if checkFitsExist(runName, fitName, figureName)
         plot.plotErrorFigs;
     end
@@ -82,5 +73,18 @@ function v = checkFitsExist(runName, fitName, plotnm, dt)
         warning(['Skipping ' plotnm ' because fits do not exist.']);
     else
         v = true;
+    end
+end
+
+function exampleSession = getExampleSession()
+% check for default; otherwise, pick first session
+    defaultSession = '20131218';
+    dts = tools.getDatesInDir;
+    if numel(dts) > 0
+        if any(ismember(dts, defaultSession))
+            exampleSession = defaultSession;
+        else
+            exampleSession = dts{1};
+        end
     end
 end
