@@ -1,5 +1,5 @@
 # Analysis code for "Constraints on neural redundancy"
-_Jay A. Hennig, Matthew D. Golub, Peter J. Lund, Patrick T. Sadtler, Emily R. Oby, Kristin M. Quick, Stephen I. Ryu, Elizabeth C. Tyler-Kabara, Aaron P. Batista*, Byron M. Yu*, Steven M. Chase*_
+Jay A. Hennig, Matthew D. Golub, Peter J. Lund, Patrick T. Sadtler, Emily R. Oby, Kristin M. Quick, Stephen I. Ryu, Elizabeth C. Tyler-Kabara, Aaron P. Batista*, Byron M. Yu*, and Steven M. Chase*. "Constraints on neural redundancy". _eLife_ (2018)
 
 Code maintainer: Jay Hennig (jhennig@cmu.edu)
 
