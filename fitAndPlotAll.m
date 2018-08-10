@@ -9,7 +9,6 @@ savePlots = true;
 plotExt = 'png'; % or 'pdf'
 doOverwrite = false;
 dts = tools.getDatesInDir;
-dts = dts(3:4);
 
 %% fit WMP activity using Intuitive activity, with IME
 % (as shown in main text, Figures 2 - 6)
