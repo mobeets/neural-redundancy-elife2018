@@ -3,7 +3,9 @@
 runName = 'example';
 hnms = {'minimal-deviation', 'uncontrolled-uniform', ...
     'uncontrolled-empirical', 'persistent-strategy', 'fixed-distribution'};
-% hnms = [hnms {'minimal-firing'}]; % skip by default because it's slow
+
+% this hypothesis takes a while to run; comment out the below line for speed
+hnms = [hnms {'minimal-firing'}];
 
 savePlots = true;
 plotExt = 'png'; % or 'pdf'
