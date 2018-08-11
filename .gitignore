@@ -1,6 +1,5 @@
 .DS_Store
 *.m~
-data/sessions/*
 data/fits/*
 data/plots/*
 data/_extra_sessions
