@@ -12,7 +12,7 @@ This codepack applies the analyses in the paper to the example experiment found 
 >> fitAndPlotAll
 ```
 
-By default, all figures will be written to `data/plots/example`. Note that in the paper, Figures 5 and 6 (and corresponding supplemental figures) are based on data from 42 experiments. We provide the code here to illustrate our analyses, and to facilitate those who wish to apply the same analyses to their own experiments.
+By default, all figures will be written to `data/plots/example`. Note that in the paper, Figures 5 and 6 (and corresponding supplemental figures) are based on data from 42 experiments. We provide the code and example session here to illustrate our analyses, and to facilitate those who wish to apply the same analyses to their own experiments.
 
 ## Requirements
 
